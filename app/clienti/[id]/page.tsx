@@ -97,10 +97,7 @@ export default function ClientProfilePage() {
     await supabase.from('clients').delete().eq('id', id)
     router.push('/clienti')
     toast.success('Client șters')
-  }<div className="flex items-center gap-2 text-stone-600">
-  <Phone size={14} className="text-stone-400" />
-  {client.phone}
-</div>
+  }
 
   if (loading) return <div className="p-10 text-stone-400 text-sm">Se încarcă...</div>
   if (!client) return <div className="p-10 text-stone-400 text-sm">Client negăsit.</div>
