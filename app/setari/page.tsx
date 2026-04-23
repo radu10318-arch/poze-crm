@@ -1,9 +1,35 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { PageHeader } from '@/components/ui/PageHeader'
-import { Camera } from 'lucide-react'
+import { Camera, Calendar, CheckCircle } from 'lucide-react'
+import { createClient } from '@/lib/supabase'
+import { toast } from 'sonner'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
-export default function SetariPage() {
+function SetariContent() {
+  const [calendarConnected, setCalendarConnected] = useState(false)
+  const searchParams = useSearchParams()
+  const supabase = createClient()
+
+  useEffect(() => {
+    const success = searchParams.get('success')
+    const error = searchParams.get('error')
+    if (success === 'calendar_connected') toast.success('Google Calendar conectat!')
+    if (error) toast.error('Eroare la conectare Google Calendar')
+
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return
+      const { data } = await supabase
+        .from('profiles')
+        .select('google_access_token')
+        .eq('id', user.id)
+        .single()
+      setCalendarConnected(!!data?.google_access_token)
+    })
+  }, [])
+
   return (
     <div>
       <PageHeader title="Setari" subtitle="Configurare cont si business" />
@@ -31,11 +57,30 @@ export default function SetariPage() {
             <label className="label">Telefon business</label>
             <input className="input" placeholder="+40 7xx xxx xxx" />
           </div>
-          <div>
-            <label className="label">Oras</label>
-            <input className="input" defaultValue="Brasov" />
-          </div>
           <button className="btn btn-primary">Salveaza</button>
+        </div>
+
+        <div className="card space-y-4">
+          <p className="section-title">Google Calendar</p>
+          {calendarConnected ? (
+            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+              <CheckCircle size={18} className="text-green-600" />
+              <div>
+                <p className="text-sm font-medium text-green-800">Calendar conectat</p>
+                <p className="text-xs text-green-600">Evenimentele se sincronizeaza automat</p>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm text-stone-500 mb-3">
+                Conecteaza Google Calendar ca evenimentele din CRM sa apara automat in calendarul tau.
+              </p>
+              <a href="/api/auth/google" className="btn btn-primary flex items-center gap-2 w-fit">
+                <Calendar size={16} />
+                Conecteaza Google Calendar
+              </a>
+            </div>
+          )}
         </div>
 
         <div className="card space-y-4">
@@ -58,5 +103,13 @@ export default function SetariPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SetariPage() {
+  return (
+    <Suspense fallback={<div className="p-10 text-stone-400">Se incarca...</div>}>
+      <SetariContent />
+    </Suspense>
   )
 }
