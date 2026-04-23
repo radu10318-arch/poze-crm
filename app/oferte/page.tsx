@@ -38,12 +38,11 @@ export default function OfertePage() {
         title="Oferte"
         action={<Link href="/oferte/nou" className="btn btn-primary">+ Ofertă nouă</Link>}
       />
-
-      <div className="p-6">
-        <div className="flex gap-1 bg-stone-100 p-1 rounded-lg mb-5 w-fit">
+      <div className="p-4 md:p-6">
+        <div className="flex gap-1 bg-stone-100 p-1 rounded-lg mb-5 overflow-x-auto">
           {TABS.map(t => (
             <button key={t.value} onClick={() => setTab(t.value)}
-              className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+              className={`px-3 py-1.5 rounded-md text-sm transition-all whitespace-nowrap ${
                 tab === t.value
                   ? 'bg-white text-stone-900 shadow-sm font-medium'
                   : 'text-stone-500 hover:text-stone-700'
@@ -53,47 +52,27 @@ export default function OfertePage() {
           ))}
         </div>
 
-        <div className="card p-0 overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-stone-100">
-                <th className="text-left px-4 py-3 text-xs font-medium text-stone-400 uppercase tracking-wide">Client</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-stone-400 uppercase tracking-wide hidden md:table-cell">Serviciu</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-stone-400 uppercase tracking-wide">Status</th>
-                <th className="text-right px-4 py-3 text-xs font-medium text-stone-400 uppercase tracking-wide">Valoare</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-stone-400 uppercase tracking-wide hidden lg:table-cell">Data</th>
-                <th className="text-right px-4 py-3 text-xs font-medium text-stone-400 uppercase tracking-wide">Acțiuni</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-100">
-              {!offers.length && (
-                <tr><td colSpan={6} className="text-center py-12 text-stone-400 text-sm">Nicio ofertă.</td></tr>
-              )}
-              {offers.map(o => (
-                <tr key={o.id} className="table-row-hover">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2.5">
-                      <Avatar name={o.clients?.full_name ?? '?'} size="sm" />
-                      <span className="text-sm font-medium text-stone-900">{o.clients?.full_name}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 hidden md:table-cell">
-                    <span className="text-sm text-stone-600">
-                      {SERVICE_TYPE_LABELS[o.service_type] ?? o.service_type}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3"><OfferBadge status={o.status} /></td>
-                  <td className="px-4 py-3 text-right text-sm font-medium">{formatCurrency(o.total_price)}</td>
-                  <td className="px-4 py-3 hidden lg:table-cell text-xs text-stone-400">{formatDate(o.created_at)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <Link href={`/oferte/${o.id}`} className="text-xs text-brand-gold hover:underline">
-                      Detalii →
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-3">
+          {!offers.length && (
+            <div className="card text-center py-12 text-stone-400 text-sm">Nicio ofertă.</div>
+          )}
+          {offers.map(o => (
+            <Link key={o.id} href={`/oferte/${o.id}`}>
+              <div className="card hover:border-brand-gold/40 transition-colors cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <Avatar name={o.clients?.full_name ?? '?'} size="sm" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-stone-900 truncate">{o.clients?.full_name}</p>
+                    <p className="text-xs text-stone-400">{SERVICE_TYPE_LABELS[o.service_type] ?? o.service_type}</p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-sm font-medium text-stone-900">{formatCurrency(o.total_price)}</p>
+                    <OfferBadge status={o.status} />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
