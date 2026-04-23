@@ -134,7 +134,7 @@ function NewOfferContent() {
     // 6. Google Calendar - daca e conectat si are data eveniment
     if (eventDate && startTime && locationPrimary) {
       try {
-        await fetch('/api/calendar/create-event', {
+        await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/calendar/create-event`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
