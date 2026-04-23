@@ -16,7 +16,7 @@ import {
 import type { Client, Event, Payment, PixiesetLink, Document, TimelineEntry, Task } from '@/types'
 import {
   Phone, Mail, MapPin, ExternalLink, FileText,
-  ChevronRight, Plus, Check, Edit2, Trash2
+  ChevronRight, Plus, Check, Edit2, Trash2, Calendar
 } from 'lucide-react'
 import { toast } from 'sonner'
 
