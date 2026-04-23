@@ -114,6 +114,7 @@ export default function ClientProfilePage() {
             <Link href={`/clienti/${id}/edit`} className="btn btn-secondary">
               <Edit2 size={14} /> Editează
             </Link>
+            <Link href={`/clienti/${id}/eveniment-nou`} className="btn btn-secondary"><Calendar size={14} /> Eveniment</Link>
             <Link href={`/oferte/nou?client=${id}`} className="btn btn-primary">
               <Plus size={14} /> Ofertă
             </Link>
