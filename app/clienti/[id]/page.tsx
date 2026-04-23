@@ -79,7 +79,7 @@ export default function ClientProfilePage() {
     await supabase.from('timeline_entries').insert({
       client_id: id,
       entry_type: 'pipeline_schimbat',
-      description: `Status schimbat → ${PIPELINE_LABELS[status as keyof typeof PIPELINE_LABELS]}`,
+      description: `Status schimbat -> ${PIPELINE_LABELS[status as keyof typeof PIPELINE_LABELS]}`,
       metadata: { to: status },
       user_id: (await supabase.auth.getUser()).data.user!.id,
     })
