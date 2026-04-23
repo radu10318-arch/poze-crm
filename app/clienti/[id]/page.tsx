@@ -177,7 +177,10 @@ export default function ClientProfilePage() {
           {/* Financial summary */}
           {payment && (
             <div className="card">
-              <p className="section-title">Situație financiară</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="section-title mb-0">Situatie financiara</p>
+                <Link href={`/clienti/${id}/financiar`} className="text-xs text-brand-gold hover:underline">Editeaza</Link>
+              </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-stone-500">Total</span>
