@@ -264,9 +264,18 @@ export default function ClientProfilePage() {
             <div className="card">
               <div className="flex items-center justify-between mb-3">
                 <p className="section-title">Eveniment · {formatDate(event.date)}</p>
+                <div className="flex gap-2">
                 <Link href={`/clienti/${id}/edit`} className="text-xs text-brand-gold hover:underline">
                   Editează
                 </Link>
+                <button onClick={async () => {
+                  if (!confirm('Stergi evenimentul?')) return
+                  await supabase.from('events').delete().eq('client_id', id)
+                  setEvent(null)
+                  toast.success('Eveniment sters')
+                }} className="text-xs text-red-400 hover:text-red-600">
+                  Sterge
+                </button>
               </div>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
