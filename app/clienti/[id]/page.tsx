@@ -136,11 +136,10 @@ export default function ClientProfilePage() {
             </div>
 
             <div className="space-y-3 text-sm">
-              <span
-                className="flex items-center gap-2 text-stone-700">
+              <div className="flex items-center gap-2 text-stone-700">
                 <Phone size={14} className="text-stone-400" />
-                {client.phone} <button 
-              </a>
+                {client.phone}
+              </div>
               {client.email && (
                 <a href={`mailto:${client.email}`}
                   className="flex items-center gap-2 text-stone-700">
