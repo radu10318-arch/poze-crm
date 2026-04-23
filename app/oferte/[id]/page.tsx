@@ -98,9 +98,19 @@ export default function OfertaPage() {
           </div>
         )}
 
-        <Link href={`/clienti/${offer.client_id}`} className="text-sm text-brand-gold hover:underline block">
-          Vezi profil client →
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link href={`/clienti/${offer.client_id}`} className="text-sm text-brand-gold hover:underline">
+            Vezi profil client →
+          </Link>
+          <button onClick={async () => {
+            if (!confirm('Stergi aceasta oferta?')) return
+            await supabase.from('offers').delete().eq('id', id)
+            toast.success('Oferta stearsa')
+            router.push('/oferte')
+          }} className="text-xs text-red-400 hover:text-red-600 transition-colors">
+            Sterge oferta
+          </button>
+        </div>
       </div>
     </div>
   )
