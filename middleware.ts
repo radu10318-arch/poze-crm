@@ -10,26 +10,24 @@ export async function middleware(request: NextRequest) {
     {
       cookies: {
         get(name: string) { return request.cookies.get(name)?.value },
-        set(name, value, options) {
-          request.cookies.set({ name, value, ...options })
+        set(name: string, value: string, options: Record<string, unknown>) {
+          request.cookies.set({ name, value, ...options } as never)
           response = NextResponse.next({ request })
-          response.cookies.set({ name, value, ...options })
+          response.cookies.set({ name, value, ...options } as never)
         },
-        remove(name, options) {
-          request.cookies.set({ name, value: '', ...options })
+        remove(name: string, options: Record<string, unknown>) {
+          request.cookies.set({ name, value: '', ...options } as never)
           response = NextResponse.next({ request })
-          response.cookies.set({ name, value: '', ...options })
+          response.cookies.set({ name, value: '', ...options } as never)
         },
       },
     }
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
-  const isPublic = request.nextUrl.pathname === '/'
 
-  if (!user && !isAuthPage && !isPublic) {
+  if (!user && !isAuthPage && request.nextUrl.pathname !== '/') {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
