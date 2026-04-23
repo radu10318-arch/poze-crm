@@ -36,7 +36,12 @@ export default function OfertaPage() {
     <div>
       <PageHeader
         title={`Oferta — ${offer.clients?.full_name}`}
-        action={<Link href="/oferte" className="btn btn-secondary">Inapoi</Link>}
+        action={
+          <div className="flex gap-2">
+            <Link href="/oferte" className="btn btn-secondary">Inapoi</Link>
+            <Link href={`/oferte/${id}/edit`} className="btn btn-primary">Editeaza</Link>
+          </div>
+        }
       />
       <div className="p-4 md:p-6 max-w-2xl space-y-4">
         <div className="card space-y-4">
