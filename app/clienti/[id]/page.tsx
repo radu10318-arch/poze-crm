@@ -136,14 +136,14 @@ export default function ClientProfilePage() {
             </div>
 
             <div className="space-y-3 text-sm">
-              <a href={`tel:${client.phone}`}
-                className="flex items-center gap-2 text-stone-700 hover:text-brand-brown">
+              <span
+                className="flex items-center gap-2 text-stone-700">
                 <Phone size={14} className="text-stone-400" />
-                {client.phone}
+                {client.phone} <button onClick={() => { navigator.clipboard.writeText(client.phone); toast.success("Copiat!") }} className="text-xs text-brand-gold ml-1">copiaza</button>
               </a>
               {client.email && (
                 <a href={`mailto:${client.email}`}
-                  className="flex items-center gap-2 text-stone-700 hover:text-brand-brown">
+                  className="flex items-center gap-2 text-stone-700">
                   <Mail size={14} className="text-stone-400" />
                   {client.email}
                 </a>
