@@ -14,10 +14,7 @@ import {
   SERVICE_TYPE_LABELS
 } from '@/lib/utils'
 import type { Client, Event, Payment, PixiesetLink, Document, TimelineEntry, Task } from '@/types'
-import {
-  Phone, Mail, MapPin, ExternalLink, FileText,
-  ChevronRight, Plus, Check, Edit2, Trash2, Calendar
-} from 'lucide-react'
+import { Phone, Mail, MapPin, ExternalLink, FileText, Plus, Check, Edit2, Trash2, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 
 type TabId = 'overview' | 'timeline' | 'documente' | 'taskuri'
@@ -70,16 +67,12 @@ export default function ClientProfilePage() {
   }, [id])
 
   async function updatePipeline(status: string) {
-    const { error } = await supabase
-      .from('clients')
-      .update({ pipeline_status: status })
-      .eq('id', id)
-    if (error) { toast.error('Eroare la actualizare'); return }
-    // Add timeline entry
+    const { error } = await supabase.from('clients').update({ pipeline_status: status }).eq('id', id)
+    if (error) { toast.error('Eroare'); return }
     await supabase.from('timeline_entries').insert({
       client_id: id,
       entry_type: 'pipeline_schimbat',
-      description: `Status schimbat -> ${PIPELINE_LABELS[status as keyof typeof PIPELINE_LABELS]}`,
+      description: 'Status schimbat -> ' + PIPELINE_LABELS[status as keyof typeof PIPELINE_LABELS],
       metadata: { to: status },
       user_id: (await supabase.auth.getUser()).data.user!.id,
     })
@@ -93,14 +86,21 @@ export default function ClientProfilePage() {
   }
 
   async function deleteClient() {
-    if (!confirm(`Ștergi definitiv clientul "${client?.full_name}"?`)) return
+    if (!confirm('Stergi definitiv clientul?')) return
     await supabase.from('clients').delete().eq('id', id)
     router.push('/clienti')
-    toast.success('Client șters')
+    toast.success('Client sters')
   }
 
-  if (loading) return <div className="p-10 text-stone-400 text-sm">Se încarcă...</div>
-  if (!client) return <div className="p-10 text-stone-400 text-sm">Client negăsit.</div>
+  async function deleteEvent() {
+    if (!confirm('Stergi evenimentul?')) return
+    await supabase.from('events').delete().eq('client_id', id)
+    setEvent(null)
+    toast.success('Eveniment sters')
+  }
+
+  if (loading) return <div className="p-10 text-stone-400 text-sm">Se incarca...</div>
+  if (!client) return <div className="p-10 text-stone-400 text-sm">Client negasit.</div>
 
   const pipelineIdx = PIPELINE_ORDER.indexOf(client.pipeline_status)
 
@@ -112,20 +112,20 @@ export default function ClientProfilePage() {
         action={
           <div className="flex gap-2">
             <Link href={`/clienti/${id}/edit`} className="btn btn-secondary">
-              <Edit2 size={14} /> Editează
+              <Edit2 size={14} /> Editeaza
             </Link>
-            <Link href={`/clienti/${id}/eveniment-nou`} className="btn btn-secondary"><Calendar size={14} /> Eveniment</Link>
+            <Link href={`/clienti/${id}/eveniment-nou`} className="btn btn-secondary">
+              <Calendar size={14} /> Eveniment
+            </Link>
             <Link href={`/oferte/nou?client=${id}`} className="btn btn-primary">
-              <Plus size={14} /> Ofertă
+              <Plus size={14} /> Oferta
             </Link>
           </div>
         }
       />
 
-      <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* LEFT SIDEBAR */}
+      <div className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="space-y-4">
-          {/* Profile card */}
           <div className="card">
             <div className="flex items-start gap-3 mb-4">
               <Avatar name={client.full_name} size="lg" />
@@ -134,18 +134,16 @@ export default function ClientProfilePage() {
                 <PipelineBadge status={client.pipeline_status} />
               </div>
             </div>
-
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-2 text-stone-700">
                 <Phone size={14} className="text-stone-400" />
                 {client.phone}
               </div>
               {client.email && (
-                <a href={`mailto:${client.email}`}
-                  className="flex items-center gap-2 text-stone-700">
+                <div className="flex items-center gap-2 text-stone-700">
                   <Mail size={14} className="text-stone-400" />
                   {client.email}
-                </a>
+                </div>
               )}
               {client.city && (
                 <div className="flex items-center gap-2 text-stone-500">
@@ -154,14 +152,12 @@ export default function ClientProfilePage() {
                 </div>
               )}
             </div>
-
             {client.lead_source && (
               <div className="mt-4 pt-4 border-t border-stone-100">
-                <p className="label">Sursă lead</p>
+                <p className="label">Sursa lead</p>
                 <p className="text-sm text-stone-700">{LEAD_SOURCE_LABELS[client.lead_source]}</p>
               </div>
             )}
-
             {client.tags && client.tags.length > 0 && (
               <div className="mt-3">
                 <p className="label">Etichete</p>
@@ -174,7 +170,6 @@ export default function ClientProfilePage() {
             )}
           </div>
 
-          {/* Financial summary */}
           {payment && (
             <div className="card">
               <div className="flex items-center justify-between mb-2">
@@ -187,7 +182,7 @@ export default function ClientProfilePage() {
                   <span className="font-medium">{formatCurrency(payment.total_amount)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-stone-500">Încasat</span>
+                  <span className="text-stone-500">Incasat</span>
                   <span className="text-green-600 font-medium">
                     {formatCurrency(payment.total_amount - payment.remaining_amount)}
                   </span>
@@ -198,11 +193,10 @@ export default function ClientProfilePage() {
                     {formatCurrency(payment.remaining_amount)}
                   </span>
                 </div>
-                {/* Progress */}
                 <div className="w-full bg-stone-100 rounded-full h-1.5 mt-2">
                   <div
                     className="bg-brand-gold h-1.5 rounded-full"
-                    style={{ width: `${Math.round(((payment.total_amount - payment.remaining_amount) / payment.total_amount) * 100)}%` }}
+                    style={{ width: `${Math.min(100, Math.round(((payment.total_amount - payment.remaining_amount) / payment.total_amount) * 100))}%` }}
                   />
                 </div>
               </div>
@@ -215,7 +209,6 @@ export default function ClientProfilePage() {
             </div>
           )}
 
-          {/* Gallery */}
           {gallery && (
             <div className="card">
               <p className="section-title">Galerie Pixieset</p>
@@ -235,48 +228,20 @@ export default function ClientProfilePage() {
           )}
         </div>
 
-        {/* MAIN CONTENT */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Pipeline progress */}
-          <div className="card">
-            <p className="section-title mb-3">Pipeline</p>
-            <div className="flex gap-1 flex-wrap">
-              {PIPELINE_ORDER.map((status, i) => (
-                <button
-                  key={status}
-                  onClick={() => updatePipeline(status)}
-                  className={`text-xs px-2.5 py-1 rounded-full transition-all border ${
-                    i === pipelineIdx
-                      ? 'bg-brand-brown text-brand-cream border-brand-brown font-medium'
-                      : i < pipelineIdx
-                      ? 'bg-stone-100 text-stone-400 border-stone-100'
-                      : 'bg-white text-stone-500 border-stone-200 hover:border-brand-gold/50'
-                  }`}
-                >
-                  {PIPELINE_LABELS[status]}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Event */}
           {event && (
             <div className="card">
               <div className="flex items-center justify-between mb-3">
                 <p className="section-title">Eveniment · {formatDate(event.date)}</p>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <Link href={`/clienti/${id}/eveniment-nou`} className="text-xs text-brand-gold hover:underline">
                     Editeaza
                   </Link>
-                  <button onClick={async () => {
-                    if (!confirm('Stergi evenimentul?')) return
-                    await supabase.from('events').delete().eq('client_id', id)
-                    setEvent(null)
-                    toast.success('Eveniment sters')
-                  }} className="text-xs text-red-400 hover:text-red-600">
+                  <button onClick={deleteEvent} className="text-xs text-red-400 hover:text-red-600">
                     Sterge
                   </button>
                 </div>
+              </div>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <p className="label">Tip</p>
@@ -284,15 +249,15 @@ export default function ClientProfilePage() {
                 </div>
                 <div>
                   <p className="label">Orar</p>
-                  <p>{event.start_time}{event.end_time ? ` — ${event.end_time}` : ''}</p>
+                  <p>{event.start_time}{event.end_time ? ` - ${event.end_time}` : ''}</p>
                 </div>
                 <div>
-                  <p className="label">Locație principală</p>
+                  <p className="label">Locatie principala</p>
                   <p>{event.location_primary}</p>
                 </div>
                 {event.location_secondary && (
                   <div>
-                    <p className="label">Locație secundară</p>
+                    <p className="label">Locatie secundara</p>
                     <p>{event.location_secondary}</p>
                   </div>
                 )}
@@ -305,18 +270,12 @@ export default function ClientProfilePage() {
                 {event.contact_person && (
                   <div>
                     <p className="label">Persoana de contact</p>
-                    <p>{event.contact_person}
-                      {event.contact_phone && (
-                        <span className="text-brand-gold ml-1">
-                          · {event.contact_phone}
-                        </span>
-                      )}
-                    </p>
+                    <p>{event.contact_person} {event.contact_phone && <span className="text-brand-gold">· {event.contact_phone}</span>}</p>
                   </div>
                 )}
                 {event.special_requirements && (
                   <div className="col-span-2">
-                    <p className="label">Cerințe speciale</p>
+                    <p className="label">Cerinte speciale</p>
                     <p className="text-stone-600">{event.special_requirements}</p>
                   </div>
                 )}
@@ -330,24 +289,19 @@ export default function ClientProfilePage() {
             </div>
           )}
 
-          {/* Tabs */}
           <div>
             <div className="flex gap-0 border-b border-stone-200 mb-4">
-              {([
-                ['overview', 'Detalii'],
-                ['timeline', 'Timeline'],
-                ['documente', 'Documente'],
-                ['taskuri', 'Task-uri'],
-              ] as [TabId, string][]).map(([t, label]) => (
-                <button key={t} onClick={() => setTab(t)}
-                  className={`px-4 py-2 text-sm border-b-2 -mb-px transition-colors ${
-                    tab === t
-                      ? 'border-brand-gold text-brand-brown font-medium'
-                      : 'border-transparent text-stone-500 hover:text-stone-700'
-                  }`}>
-                  {label}
-                </button>
-              ))}
+              {(['overview', 'timeline', 'documente', 'taskuri'] as TabId[]).map((t) => {
+                const labels: Record<TabId, string> = { overview: 'Detalii', timeline: 'Timeline', documente: 'Documente', taskuri: 'Task-uri' }
+                return (
+                  <button key={t} onClick={() => setTab(t)}
+                    className={`px-4 py-2 text-sm border-b-2 -mb-px transition-colors ${
+                      tab === t ? 'border-brand-gold text-brand-brown font-medium' : 'border-transparent text-stone-500 hover:text-stone-700'
+                    }`}>
+                    {labels[t]}
+                  </button>
+                )
+              })}
             </div>
 
             {tab === 'timeline' && (
@@ -365,19 +319,14 @@ export default function ClientProfilePage() {
 
             {tab === 'documente' && (
               <div className="card">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="section-title">Documente</p>
-                </div>
-                {!documents.length && (
-                  <p className="text-sm text-stone-400">Niciun document atașat.</p>
-                )}
-                <div className="space-y-2">
+                <p className="section-title">Documente</p>
+                {!documents.length && <p className="text-sm text-stone-400">Niciun document atasat.</p>}
+                <div className="space-y-2 mt-2">
                   {documents.map(doc => (
                     <a key={doc.id} href={doc.file_url} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-3 p-2.5 rounded-lg border border-stone-100 hover:border-brand-gold/30 transition-colors">
                       <FileText size={16} className="text-stone-400" />
                       <span className="flex-1 text-sm text-stone-700">{doc.file_name}</span>
-                      <span className="text-xs text-stone-400">{formatDateShort(doc.uploaded_at)}</span>
                       <ExternalLink size={12} className="text-stone-300" />
                     </a>
                   ))}
@@ -389,26 +338,17 @@ export default function ClientProfilePage() {
               <div className="card">
                 <p className="section-title">Task-uri</p>
                 {!tasks.length && <p className="text-sm text-stone-400">Niciun task.</p>}
-                <div className="space-y-2">
+                <div className="space-y-2 mt-2">
                   {tasks.map(task => (
                     <div key={task.id}
-                      className={`flex items-center gap-3 p-2.5 rounded-lg border transition-colors ${
-                        task.completed ? 'border-stone-100 opacity-50' : 'border-stone-200'
-                      }`}>
+                      className={`flex items-center gap-3 p-2.5 rounded-lg border transition-colors ${task.completed ? 'border-stone-100 opacity-50' : 'border-stone-200'}`}>
                       <button onClick={() => toggleTask(task.id, !task.completed)}
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                          task.completed
-                            ? 'bg-green-500 border-green-500'
-                            : 'border-stone-300 hover:border-brand-gold'
-                        }`}>
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${task.completed ? 'bg-green-500 border-green-500' : 'border-stone-300 hover:border-brand-gold'}`}>
                         {task.completed && <Check size={11} className="text-white" />}
                       </button>
                       <span className={`flex-1 text-sm ${task.completed ? 'line-through text-stone-400' : 'text-stone-700'}`}>
                         {task.title}
                       </span>
-                      {task.due_date && (
-                        <span className="text-xs text-stone-400">{formatDateShort(task.due_date)}</span>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -416,11 +356,10 @@ export default function ClientProfilePage() {
             )}
           </div>
 
-          {/* Danger zone */}
           <div className="flex justify-end">
             <button onClick={deleteClient}
               className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-600 transition-colors">
-              <Trash2 size={12} /> Șterge client
+              <Trash2 size={12} /> Sterge client
             </button>
           </div>
         </div>
