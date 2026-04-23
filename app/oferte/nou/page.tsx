@@ -26,8 +26,7 @@ export default function NewOfferPage() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    supabase.from('clients').select('id,full_name').then(({ data }) => setClients(data ?? []))
-  }, [])
+    supabase.from('clients').select('id,full_name').then(({ data }) => setClients((data ?? []) as Client[]))
 
   const extraTotal = extras.reduce((s, e) => s + (e.price || 0), 0)
   const total = (basePrice || 0) + extraTotal
