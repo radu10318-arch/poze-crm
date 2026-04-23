@@ -9,7 +9,7 @@ import type { Client, ServiceType, PricingType, ExtraOption } from '@/types'
 import { Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-export default function NewOfferPage() {
+function NewOfferPage() {
   const router = useRouter()
   const params = useSearchParams()
   const supabase = createClient()
@@ -206,4 +206,9 @@ export default function NewOfferPage() {
       </div>
     </div>
   )
+}
+
+export default function NewOfferPageWrapper() {
+  const { Suspense } = require('react')
+  return <Suspense fallback={<div>Loading...</div>}><NewOfferPage /></Suspense>
 }
