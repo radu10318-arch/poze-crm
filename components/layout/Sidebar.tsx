@@ -13,7 +13,6 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/clienti', label: 'Clienți', icon: Users },
   { href: '/oferte', label: 'Oferte', icon: FileText },
-  { href: '/pipeline', label: 'Pipeline', icon: GitBranch },
   { href: '/financiar', label: 'Financiar', icon: DollarSign },
   { href: '/calendar', label: 'Calendar', icon: Calendar },
   { href: '/documente', label: 'Documente', icon: FolderOpen },
@@ -23,7 +22,6 @@ const BOTTOM_NAV = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/clienti', label: 'Clienți', icon: Users },
   { href: '/oferte', label: 'Oferte', icon: FileText },
-  { href: '/pipeline', label: 'Pipeline', icon: GitBranch },
   { href: '/setari', label: 'Setări', icon: Settings },
 ]
 
