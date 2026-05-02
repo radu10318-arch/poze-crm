@@ -2,6 +2,13 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  // Rutele API de calendar nu necesita autentificare prin middleware
+  if (pathname.startsWith('/api/calendar')) {
+    return NextResponse.next()
+  }
+
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -25,9 +32,9 @@ export async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-  const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
+  const isAuthPage = pathname.startsWith('/auth')
 
-  if (!user && !isAuthPage && request.nextUrl.pathname !== '/') {
+  if (!user && !isAuthPage && pathname !== '/') {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 

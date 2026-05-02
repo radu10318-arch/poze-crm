@@ -25,10 +25,18 @@ export default function CalendarPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    supabase.from('events').select('*, clients(full_name)')
+  supabase.auth.getUser().then(({ data: { user } }) => {
+    if (!user) return
+    supabase.from('events')
+      .select('*, clients(full_name)')
+      .eq('user_id', user.id)
       .order('date', { ascending: true })
-      .then(({ data }) => setEvents((data ?? []) as EventWithClient[]))
-  }, [])
+      .then(({ data, error }) => {
+        console.log('events:', data, 'error:', error)
+        setEvents((data ?? []) as EventWithClient[])
+      })
+  })
+}, [])
 
   const today = new Date().toISOString().slice(0, 10)
   const viitoare = events.filter(e => e.date >= today)
